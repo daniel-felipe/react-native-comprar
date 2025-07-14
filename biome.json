@@ -22,7 +22,7 @@
 		"formatter": {
 			"quoteStyle": "single",
 			"semicolons": "asNeeded",
-			"lineWidth": 120,
+			"lineWidth": 100,
 			"indentWidth": 2
 		}
 	},
