@@ -1,4 +1,5 @@
-import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native'
+import { useState } from 'react'
+import { Alert, FlatList, Image, Text, TouchableOpacity, View } from 'react-native'
 import { Button } from '@/components/Button'
 import { Filter } from '@/components/Filter'
 import { Input } from '@/components/Input'
@@ -7,38 +8,48 @@ import { FilterStatus } from '@/types/filter-status'
 import { styles } from './styles'
 
 const FILTER_STATUSES: FilterStatus[] = [FilterStatus.PENDING, FilterStatus.DONE]
-const ITEMS = [
-	{
-		id: '1',
-		status: FilterStatus.PENDING,
-		description: 'Comprar pão',
-	},
-	{
-		id: '2',
-		status: FilterStatus.PENDING,
-		description: 'Comprar leite',
-	},
-	{
-		id: '3',
-		status: FilterStatus.DONE,
-		description: 'Comprar ovos',
-	},
-]
 
 export default function Home() {
+	const [filter, setFilter] = useState(FilterStatus.PENDING)
+	const [description, setDescription] = useState('')
+	const [items, setItems] = useState<any>([])
+
+	function handleAddItem() {
+		if (!description.trim()) {
+			return Alert.alert('Adicionar', 'Informa a descrição para adicionar.')
+		}
+
+		if (items.some((i) => i.description.toLowerCase() === description.trim().toLowerCase())) {
+			return Alert.alert('Adicionar', 'Esse ítem já está na lista.')
+		}
+
+		const newItem = {
+			id: Math.random().toString(36).substring(2),
+			description: description.trim(),
+			status: FilterStatus.PENDING,
+		}
+
+		setItems((prevState) => [...prevState, newItem])
+	}
+
 	return (
 		<View style={styles.container}>
 			<Image source={require('@/assets/logo.png')} style={styles.logo} />
 
 			<View style={styles.form}>
-				<Input placeholder="O que você precisa comprar" />
-				<Button title="Entrar" />
+				<Input placeholder="O que você precisa comprar" onChangeText={setDescription} />
+				<Button title="Entrar" onPress={handleAddItem} />
 			</View>
 
 			<View style={styles.content}>
 				<View style={styles.header}>
-					{FILTER_STATUSES.map((filterStatus) => (
-						<Filter key={filterStatus} status={filterStatus} isActive />
+					{FILTER_STATUSES.map((status) => (
+						<Filter
+							key={status}
+							status={status}
+							isActive={filter === status}
+							onPress={() => setFilter(status)}
+						/>
 					))}
 
 					<TouchableOpacity style={styles.clearButton}>
@@ -47,7 +58,7 @@ export default function Home() {
 				</View>
 
 				<FlatList
-					data={ITEMS}
+					data={items}
 					keyExtractor={(item) => item.id}
 					renderItem={({ item }) => (
 						<Item
