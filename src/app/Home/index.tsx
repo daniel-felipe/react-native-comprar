@@ -15,7 +15,7 @@ export default function Home() {
 	const [description, setDescription] = useState('')
 	const [items, setItems] = useState<ItemStorage[]>([])
 
-	function handleAddItem() {
+	async function handleAddItem() {
 		if (!description.trim()) {
 			return Alert.alert('Adicionar', 'Informa a descrição para adicionar.')
 		}
@@ -30,7 +30,8 @@ export default function Home() {
 			status: FilterStatus.PENDING,
 		}
 
-		setItems((prevState) => [...prevState, newItem])
+		await itemsStorage.add(newItem)
+		await getItems()
 	}
 
 	async function getItems() {
