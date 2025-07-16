@@ -15,7 +15,7 @@ async function get(): Promise<ItemStorage[]> {
 
 		return storage ? JSON.parse(storage) : []
 	} catch (error) {
-		throw new Error('GET_ITEMS: ' + error)
+		throw new Error(`GET_ITEMS: ${error}`)
 	}
 }
 
@@ -37,12 +37,21 @@ async function save(items: ItemStorage[]): Promise<void> {
 	try {
 		await AsyncStorage.setItem(ITEMS_STORAGE_KEY, JSON.stringify(items))
 	} catch (error) {
-		throw new Error('ITEMS_SAVE: ' + error)
+		throw new Error(`ITEMS_SAVE: ${error}`)
 	}
+}
+
+async function remove(id: string): Promise<void> {
+	const items = await get()
+
+	const updatedItems = items.filter((item) => item.id !== id)
+
+	await save(updatedItems)
 }
 
 export const itemsStorage = {
 	get,
 	getByStatus,
 	add,
+	remove,
 }

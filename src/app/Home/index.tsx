@@ -31,7 +31,20 @@ export default function Home() {
 		}
 
 		await itemsStorage.add(newItem)
-		await getItemsByStatus()
+		filter === FilterStatus.PENDING ? await getItemsByStatus() : setFilter(FilterStatus.PENDING)
+
+		Alert.alert('Adicionado', `Adicionado ${description}`)
+		setDescription('')
+	}
+
+	async function handleRemoveItem(id: string) {
+		try {
+			await itemsStorage.remove(id)
+			await getItemsByStatus()
+		} catch (error) {
+			console.error(error)
+			Alert.alert('Remover', 'Não foi possível remover o item.')
+		}
 	}
 
 	async function getItemsByStatus() {
@@ -54,7 +67,11 @@ export default function Home() {
 			<Image source={require('@/assets/logo.png')} style={styles.logo} />
 
 			<View style={styles.form}>
-				<Input placeholder="O que você precisa comprar" onChangeText={setDescription} />
+				<Input
+					placeholder="O que você precisa comprar"
+					onChangeText={setDescription}
+					value={description}
+				/>
 				<Button title="Entrar" onPress={handleAddItem} />
 			</View>
 
@@ -81,7 +98,7 @@ export default function Home() {
 						<Item
 							data={item}
 							onStatus={() => console.log('Troca Status')}
-							onRemove={() => console.log('Remover')}
+							onRemove={() => handleRemoveItem(item.id)}
 						/>
 					)}
 					showsVerticalScrollIndicator={false}
