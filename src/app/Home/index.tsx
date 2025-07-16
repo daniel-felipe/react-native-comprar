@@ -74,6 +74,16 @@ export default function Home() {
 		}
 	}
 
+	async function handleToggleItemStatus(id: string) {
+		try {
+			await itemsStorage.toggleStatus(id)
+			await getItemsByStatus()
+		} catch (error) {
+			console.error(error)
+			Alert.alert('Erro', 'Não foi possível atualizar o status.')
+		}
+	}
+
 	// biome-ignore lint/correctness/useExhaustiveDependencies: ...
 	useEffect(() => {
 		getItemsByStatus()
@@ -114,7 +124,7 @@ export default function Home() {
 					renderItem={({ item }) => (
 						<Item
 							data={item}
-							onStatus={() => console.log('Troca Status')}
+							onStatus={() => handleToggleItemStatus(item.id)}
 							onRemove={() => handleRemoveItem(item.id)}
 						/>
 					)}
